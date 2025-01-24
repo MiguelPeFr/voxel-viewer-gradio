@@ -3,13 +3,13 @@ import numpy as np
 import plotly.graph_objects as go
 from pyvox.models import Vox
 from pyvox.writer import VoxWriter
-from pyvox.parser import VoxParser
+from pyvox.custom_parser import CustomVoxParser
 
 def load_vox_model(file_path):
     """Load and parse a .vox file"""
     try:
         print(f"Attempting to parse vox file: {file_path}")
-        model = VoxParser(file_path).parse()
+        model = CustomVoxParser(file_path).parse()
         print(f"Model parsed successfully")
         
         voxels = model.to_dense()
