@@ -47,12 +47,12 @@ def create_3d_scatter(voxels, palette):
         x=x, y=y, z=z,
         mode='markers',
         marker=dict(
-            size=6,  # Reduced size for better visualization
+            size=6, 
             color=rgb_colors,
             opacity=1.0,
             symbol='square',  # Using square symbol (supported by Plotly)
             line=dict(width=0),  # Remove border lines completely
-            sizemode='diameter',  # Fixed size regardless of zoom
+            sizemode='diameter', 
             sizeref=1.0  # Reference scale for consistent size
         )
     )])
@@ -63,14 +63,14 @@ def create_3d_scatter(voxels, palette):
     center_z = (z.max() + z.min()) / 2
     max_range = max(x.max() - x.min(), y.max() - y.min(), z.max() - z.min())
     
-    # Update layout for better visualization
+    # better visualization
     fig.update_layout(
         scene=dict(
             aspectmode='cube',  # Force cubic aspect ratio
             camera=dict(
                 up=dict(x=0, y=1, z=0),
                 center=dict(x=0, y=0, z=0),
-                eye=dict(x=1.5, y=0.9, z=0.9)  # Adjusted camera position for a closer view while maintaining angle
+                eye=dict(x=1.5, y=0.9, z=0.9) 
             ),
             xaxis=dict(range=[center_x - max_range/1.5, center_x + max_range/1.5], showgrid=True, gridwidth=1, gridcolor='rgba(128, 128, 128, 0.2)'),
             yaxis=dict(range=[center_y - max_range/1.5, center_y + max_range/1.5], showgrid=True, gridwidth=1, gridcolor='rgba(128, 128, 128, 0.2)'),
