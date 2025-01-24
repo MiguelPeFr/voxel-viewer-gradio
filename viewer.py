@@ -32,11 +32,21 @@ def create_3d_scatter(voxels, palette):
     x, y, z = np.nonzero(voxels)
     color_indices = voxels[x, y, z] - 1  # Subtract 1 since palette indices in .vox start at 1
     
-    # Apply rotation to orient the model correctly
-    # Negate y coordinate to flip the model upright and rotate z to face forward
-    y = -y
-    temp_z = z.copy()
-    z = -temp_z  # Negate z to make the model face forward
+    # Apply rotations: first 90 degrees in X, then 180 degrees in Z
+    # Convert to radians
+    theta_x = np.pi / 2  # 90 degrees
+    theta_z = np.pi      # 180 degrees
+    
+    # First rotation around X axis
+    y_rot = y * np.cos(theta_x) - z * np.sin(theta_x)
+    z_rot = y * np.sin(theta_x) + z * np.cos(theta_x)
+    y, z = y_rot, z_rot
+    
+    # Then rotation around Z axis
+    x_rot = x * np.cos(theta_z) - y * np.sin(theta_z)
+    y_rot = x * np.sin(theta_z) + y * np.cos(theta_z)
+    x, y = x_rot, y_rot
+    
     
     # Convert palette indices to RGB colors using direct palette indexing
     rgb_colors = [f'rgb({int(palette[c][0])}, {int(palette[c][1])}, {int(palette[c][2])})' 
