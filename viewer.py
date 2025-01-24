@@ -90,19 +90,70 @@ def display_vox_model(vox_file):
     try:
         # Load the vox model
         if not vox_file:
-            return "Please upload a .vox file"
+            fig = go.Figure()
+            fig.add_annotation(
+                text="Please upload a .vox file",
+                xref="paper", yref="paper",
+                x=0.5, y=0.5,
+                showarrow=False,
+                font=dict(size=16, color="white")
+            )
+            fig.update_layout(
+                paper_bgcolor='rgba(0,0,0,1)',
+                plot_bgcolor='rgba(0,0,0,1)'
+            )
+            return fig
         
         if not vox_file.name.endswith('.vox'):
-            return "Please upload a valid .vox file"
+            fig = go.Figure()
+            fig.add_annotation(
+                text="Please upload a valid .vox file",
+                xref="paper", yref="paper",
+                x=0.5, y=0.5,
+                showarrow=False,
+                font=dict(size=16, color="white")
+            )
+            fig.update_layout(
+                paper_bgcolor='rgba(0,0,0,1)',
+                plot_bgcolor='rgba(0,0,0,1)'
+            )
+            return fig
         
         print(f"Loading vox file: {vox_file.name}")
-        voxels, palette = load_vox_model(vox_file.name)
+        voxels, palette = load_vox_model(vox_file.temp_path if hasattr(vox_file, 'temp_path') else vox_file.name)
         
         if voxels is None or palette is None:
-            return "Error: Could not load voxel data from file"
+            fig = go.Figure()
+            error_message = "Error: Could not load voxel data from file\n"
+            error_message += "This might be due to version incompatibility.\n"
+            error_message += "The viewer currently supports .vox files up to version 200."
+            fig.add_annotation(
+                text=error_message,
+                xref="paper", yref="paper",
+                x=0.5, y=0.5,
+                showarrow=False,
+                font=dict(size=16, color="white")
+            )
+            fig.update_layout(
+                paper_bgcolor='rgba(0,0,0,1)',
+                plot_bgcolor='rgba(0,0,0,1)'
+            )
+            return fig
         
         if voxels.size == 0:
-            return "Error: No voxels found in the model"
+            fig = go.Figure()
+            fig.add_annotation(
+                text="Error: No voxels found in the model",
+                xref="paper", yref="paper",
+                x=0.5, y=0.5,
+                showarrow=False,
+                font=dict(size=16, color="white")
+            )
+            fig.update_layout(
+                paper_bgcolor='rgba(0,0,0,1)',
+                plot_bgcolor='rgba(0,0,0,1)'
+            )
+            return fig
         
         print(f"Model loaded successfully. Shape: {voxels.shape}, Palette size: {len(palette)}")
         
@@ -112,16 +163,34 @@ def display_vox_model(vox_file):
         return fig
     except Exception as e:
         print(f"Error details: {str(e)}")
-        return f"Error loading model: {str(e)}"
+        # Create an empty figure with error message
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error loading model: {str(e)}",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5,
+            showarrow=False,
+            font=dict(size=16, color="white")
+        )
+        fig.update_layout(
+            paper_bgcolor='rgba(0,0,0,1)',
+            plot_bgcolor='rgba(0,0,0,1)'
+        )
+        return fig
 
 # Create Gradio interface
 interface = gr.Interface(
     fn=display_vox_model,
     inputs=gr.File(label="Upload .vox file"),
-    outputs=gr.Plot(label="3D Voxel Model"),
+    outputs=gr.Plot(label="3D Voxel Model"),  # Remove the type parameter
     title="Voxel Model Viewer",
     description="Upload a .vox file to view the 3D voxelized model.",
-    examples=[["examples/modelo_optimizado.vox"]]  # Updated path
+    examples=[
+        ["examples/modelo_optimizado.vox"],
+        ["examples/Poster.vox"],
+        ["examples/Horse.vox"]
+    ],
+    cache_examples=True  # Enable caching to ensure examples work properly
 )
 
 if __name__ == "__main__":
