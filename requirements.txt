@@ -1,4 +1,4 @@
-gradio==5.13.1
+git+https://github.com/MiguelPeFr/py-vox-io.git
 numpy>=1.24.0
 plotly>=5.18.0
 py-vox-io
