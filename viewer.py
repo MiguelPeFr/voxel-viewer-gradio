@@ -1,8 +1,6 @@
 import gradio as gr
 import numpy as np
 import plotly.graph_objects as go
-from pyvox.models import Vox
-from pyvox.writer import VoxWriter
 from pyvox.custom_parser import CustomVoxParser
 
 def load_vox_model(file_path):
@@ -95,75 +93,42 @@ def create_3d_scatter(voxels, palette):
     
     return fig
 
+def create_error_figure(message):
+    """Helper function to create error figures with consistent styling"""
+    fig = go.Figure()
+    fig.add_annotation(
+        text=message,
+        xref="paper", yref="paper",
+        x=0.5, y=0.5,
+        showarrow=False,
+        font=dict(size=16, color="white")
+    )
+    fig.update_layout(
+        paper_bgcolor='rgba(0,0,0,1)',
+        plot_bgcolor='rgba(0,0,0,1)'
+    )
+    return fig
+
 def display_vox_model(vox_file):
     """Main function to display the voxel model"""
     try:
-        # Load the vox model
         if not vox_file:
-            fig = go.Figure()
-            fig.add_annotation(
-                text="Please upload a .vox file",
-                xref="paper", yref="paper",
-                x=0.5, y=0.5,
-                showarrow=False,
-                font=dict(size=16, color="white")
-            )
-            fig.update_layout(
-                paper_bgcolor='rgba(0,0,0,1)',
-                plot_bgcolor='rgba(0,0,0,1)'
-            )
-            return fig
+            return create_error_figure("Please upload a .vox file")
         
         if not vox_file.name.endswith('.vox'):
-            fig = go.Figure()
-            fig.add_annotation(
-                text="Please upload a valid .vox file",
-                xref="paper", yref="paper",
-                x=0.5, y=0.5,
-                showarrow=False,
-                font=dict(size=16, color="white")
-            )
-            fig.update_layout(
-                paper_bgcolor='rgba(0,0,0,1)',
-                plot_bgcolor='rgba(0,0,0,1)'
-            )
-            return fig
+            return create_error_figure("Please upload a valid .vox file")
         
         print(f"Loading vox file: {vox_file.name}")
         voxels, palette = load_vox_model(vox_file.temp_path if hasattr(vox_file, 'temp_path') else vox_file.name)
         
         if voxels is None or palette is None:
-            fig = go.Figure()
             error_message = "Error: Could not load voxel data from file\n"
             error_message += "This might be due to version incompatibility.\n"
             error_message += "The viewer currently supports .vox files up to version 200."
-            fig.add_annotation(
-                text=error_message,
-                xref="paper", yref="paper",
-                x=0.5, y=0.5,
-                showarrow=False,
-                font=dict(size=16, color="white")
-            )
-            fig.update_layout(
-                paper_bgcolor='rgba(0,0,0,1)',
-                plot_bgcolor='rgba(0,0,0,1)'
-            )
-            return fig
+            return create_error_figure(error_message)
         
         if voxels.size == 0:
-            fig = go.Figure()
-            fig.add_annotation(
-                text="Error: No voxels found in the model",
-                xref="paper", yref="paper",
-                x=0.5, y=0.5,
-                showarrow=False,
-                font=dict(size=16, color="white")
-            )
-            fig.update_layout(
-                paper_bgcolor='rgba(0,0,0,1)',
-                plot_bgcolor='rgba(0,0,0,1)'
-            )
-            return fig
+            return create_error_figure("Error: No voxels found in the model")
         
         print(f"Model loaded successfully. Shape: {voxels.shape}, Palette size: {len(palette)}")
         
@@ -173,20 +138,7 @@ def display_vox_model(vox_file):
         return fig
     except Exception as e:
         print(f"Error details: {str(e)}")
-        # Create an empty figure with error message
-        fig = go.Figure()
-        fig.add_annotation(
-            text=f"Error loading model: {str(e)}",
-            xref="paper", yref="paper",
-            x=0.5, y=0.5,
-            showarrow=False,
-            font=dict(size=16, color="white")
-        )
-        fig.update_layout(
-            paper_bgcolor='rgba(0,0,0,1)',
-            plot_bgcolor='rgba(0,0,0,1)'
-        )
-        return fig
+        return create_error_figure(f"Error loading model: {str(e)}")
 
 # Create Gradio interface
 interface = gr.Interface(
