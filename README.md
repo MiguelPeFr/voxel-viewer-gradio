@@ -8,6 +8,9 @@ sdk_version: "5.13.1"
 app_file: viewer.py
 pinned: false
 ---
+> [!TIP]
+> Now works with current voxel formats of version 200 and more complex models.
+> In order to achieve this I have updated the py-vox-io package to support these formats. You can view and download the new version of py-vox-io from: https://github.com/MiguelPeFr/py-vox-io
 
 # Voxel Model Viewer
 
